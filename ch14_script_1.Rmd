@@ -110,6 +110,25 @@ The OOB error tells us the proportion of the data that was incorrectly classifie
 
 **Prompt:** Now that we have our three models, let's see how well they stack up against each other. Use `predict()` on our three models with cces as the data. Then, use `bind_cols()` to combine the cces data with our predictions. Finally, use `accuracy()` to get the proportion of votes that the model correctly predicted
 
+```{r}
+tree_preds <- predict(trump_tree, new_data = cces)
+log_preds <- predict(logistic_fit, new_data = cces)
+forest_preds <- predict(trump_forest, new_data = cces)
+
+cces %>%
+  bind_cols(tree_preds, 
+            log_preds, 
+            forest_preds) %>%
+  select(trump,
+         tree = .pred_class,
+         logist = .pred_class1,
+         forest = .pred_class2) %>%
+  summarize(tree.correct = mean(tree == trump),
+            logist.correct = mean(logist == trump),
+            forest.correct = mean(forest == trump))
+```
+
+
 1) Compare the accuracy of our three models, use bind_rows() to put the three in a nice tibble. Which model appears to be the best?
 
 2) So the randomforest model appears to be the best model, how can we test that this is true? What should we worry about?
